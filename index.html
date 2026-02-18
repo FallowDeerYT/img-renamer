@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <title>IMG Renamer</title>
+  <style>
+    :root{
+      --bg: #0f1115;
+      --bg2:#0b0d12;
+      --panel:#101522;
+      --panel2:#0f1420;
+      --text:#e8eaf0;
+      --muted:#aab0bf;
+      --border:#2a3142;
+      --accent:#2d6cdf;
+      --accentGlow: rgba(45,108,223,.32);
+      --shadow: 0 14px 40px rgba(0,0,0,.28);
+      --radius: 18px;
+      --radius2: 26px;
+      --max: 1200px;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    [data-theme="light"]{
+      --bg:#f6f7fa;
+      --bg2:#eef1f6;
+      --panel:#ffffff;
+      --panel2:#ffffff;
+      --text:#1f2430;
+      --muted:#5a657a;
+      --border:#cfd4df;
+      --shadow: 0 12px 34px rgba(20,30,50,.12);
+      --accentGlow: rgba(45,108,223,.18);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background:
+        radial-gradient(1100px 520px at 50% -20%, var(--accentGlow), transparent 60%),
+        radial-gradient(900px 500px at 10% 10%, rgba(122,167,255,.14), transparent 55%),
+        radial-gradient(900px 500px at 90% 20%, rgba(45,108,223,.16), transparent 55%),
+        linear-gradient(180deg, var(--bg2), var(--bg));
+    }
+
+    a{color:inherit}
+    .container{max-width:var(--max); margin:0 auto; padding:24px 18px 60px;}
+    .nav{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; padding:12px 0 6px;
+    }
+    .navLeft{
+      display:flex; align-items:center; gap:10px;
+      font-weight:900; letter-spacing:.2px;
+    }
+    .navLeft .tag{
+      font-weight:800;
+      font-size:12px;
+      color:var(--muted);
+      border:1px solid var(--border);
+      padding:6px 10px;
+      border-radius:999px;
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+    }
+
+    .controls{
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    }
+    .pill{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    .select{
+      appearance:none;
+      border:1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      padding:8px 34px 8px 10px;
+      border-radius: 12px;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .iconbtn{
+      width:44px; height:44px;
+      border-radius: 14px;
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      color: var(--text);
+      cursor:pointer;
+      display:inline-flex; align-items:center; justify-content:center;
+      box-shadow: var(--shadow);
+    }
+    .iconbtn:hover{filter:brightness(1.03)}
+    .hero{
+      margin-top:22px;
+      border:1px solid var(--border);
+      border-radius: var(--radius2);
+      background: color-mix(in srgb, var(--panel2) 94%, transparent);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+      padding: 52px 24px 42px;
+      text-align:center;
+    }
+    .hero::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(1000px 420px at 50% 0%, rgba(45,108,223,.24), transparent 65%),
+        radial-gradient(900px 360px at 20% 10%, rgba(122,167,255,.18), transparent 60%),
+        radial-gradient(900px 360px at 80% 18%, rgba(45,108,223,.20), transparent 60%);
+      pointer-events:none;
+    }
+    .hero > *{position:relative}
+    h1{
+      margin:0;
+      font-size: 44px;
+      letter-spacing: .2px;
+      line-height: 1.05;
+    }
+    .sub{
+      margin: 12px auto 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+    .cta{
+      margin-top: 26px;
+      display:flex; justify-content:center; gap:12px; flex-wrap:wrap;
+    }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:12px;
+      text-decoration:none;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      color: var(--text);
+      font-weight: 900;
+      cursor:pointer;
+      padding: 14px 18px;
+      min-height: 52px;
+    }
+    .btn:hover{filter:brightness(1.03)}
+    .btnPrimary{
+      background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 92%, #fff 8%), var(--accent));
+      border-color: color-mix(in srgb, var(--accent) 70%, var(--border));
+      box-shadow: 0 14px 34px rgba(45,108,223,.30);
+      padding: 18px 22px;
+      min-height: 62px;
+      font-size: 16px;
+    }
+    .btnGhost{
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      font-weight: 850;
+    }
+    .badges{
+      margin-top: 20px;
+      display:flex; justify-content:center; gap:10px; flex-wrap:wrap;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      font-weight: 850;
+      font-size: 12px;
+      color: color-mix(in srgb, var(--text) 90%, var(--muted));
+    }
+    .section{
+      margin-top: 38px;
+    }
+    .sectionTitle{
+      text-align:center;
+      font-size: 14px;
+      letter-spacing: .14em;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .grid3{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .card{
+      grid-column: span 4;
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      box-shadow: var(--shadow);
+      padding: 18px 18px;
+      min-height: 130px;
+    }
+    @media (max-width: 980px){
+      .card{grid-column: span 6;}
+      h1{font-size:38px}
+      .hero{padding:44px 18px 38px}
+    }
+    @media (max-width: 620px){
+      .card{grid-column: span 12;}
+      h1{font-size:34px}
+    }
+    .kicker{
+      display:flex; align-items:center; gap:10px;
+      font-weight: 950;
+      font-size: 15px;
+    }
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent);
+      flex:none;
+    }
+    .muted{color: var(--muted); line-height: 1.55; margin: 10px 0 0}
+    .twoCol{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 900px){
+      .twoCol{grid-template-columns:1fr}
+    }
+    details{
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      box-shadow: var(--shadow);
+      padding: 14px 16px;
+    }
+    details + details{margin-top:12px}
+    summary{
+      list-style:none;
+      cursor:pointer;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      font-weight: 950;
+    }
+    summary::-webkit-details-marker{display:none}
+    .chev{width:18px; height:18px; opacity:.75; transition: transform .18s ease}
+    details[open] .chev{transform: rotate(180deg)}
+    .footer{
+      margin-top: 36px;
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      color: var(--muted);
+      font-size: 12px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .link{
+      text-decoration:none;
+      border-bottom: 1px dotted color-mix(in srgb, var(--muted) 65%, transparent);
+    }
+    .link:hover{border-bottom-color: var(--accent)}
+    .mono{font-family:var(--mono); font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="nav">
+      <div class="navLeft">
+        <span id="navName">IMG Renamer</span>
+        <span class="tag" id="navTag">Windows</span>
+      </div>
+
+      <div class="controls">
+        <div class="pill" title="Language">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 16 16" style="display:block">
+            <path fill="currentColor" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m7.5-6.923c-.67.204-1.335.82-1.887 1.855A8 8 0 0 0 5.145 4H7.5zM4.09 4a9.3 9.3 0 0 1 .64-1.539 7 7 0 0 1 .597-.933A7.03 7.03 0 0 0 2.255 4zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a7 7 0 0 0-.656 2.5zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5zM8.5 5v2.5h2.99a12.5 12.5 0 0 0-.337-2.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5zM5.145 12q.208.58.468 1.068c.552 1.035 1.218 1.65 1.887 1.855V12zm.182 2.472a7 7 0 0 1-.597-.933A9.3 9.3 0 0 1 4.09 12H2.255a7 7 0 0 0 3.072 2.472M3.82 11a13.7 13.7 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5zm6.853 3.472A7 7 0 0 0 13.745 12H11.91a9.3 9.3 0 0 1-.64 1.539 7 7 0 0 1-.597.933M8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855q.26-.487.468-1.068zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.7 13.7 0 0 1-.312 2.5m2.802-3.5a7 7 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7 7 0 0 0-3.072-2.472c.218.284.418.598.597.933M10.855 4a8 8 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4z"/>
+          </svg>
+          <select id="langSel" class="select" aria-label="Language">
+            <option value="nl">Nederlands</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+
+        <button class="iconbtn" id="themeBtn" aria-label="Theme">
+          <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M21.64 13a1 1 0 0 0-1.05-.14 8.05 8.05 0 0 1-3.37.73A8.15 8.15 0 0 1 9.08 5.49a8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36 10 10 0 1 0 22 14a1 1 0 0 0-.36-1Z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1 id="hTitle">IMG Renamer</h1>
+        <p class="sub" id="hSub">
+          Rename media based on date & location — preview first, configurable rules, conflict handling, undo and logs.
+        </p>
+
+        <div class="cta">
+          <a class="btn btnPrimary" id="btnDownload" href="#" download>
+            <span id="btnDownloadTxt">Download Installer</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        <div class="cta" style="margin-top:10px">
+          <a class="btn btnGhost" id="btnPortable" href="#" download><span id="btnPortableTxt">Portable (ZIP)</span></a>
+          <a class="btn btnGhost" id="btnGitHub" href="#" target="_blank" rel="noreferrer"><span id="btnGitHubTxt">GitHub</span></a>
+        </div>
+
+        <div class="badges">
+          <span class="badge" id="b1">No Python required</span>
+          <span class="badge" id="b2">Preview before rename</span>
+          <span class="badge" id="b3">Undo + CSV logs</span>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sectionTitle" id="featTitle">Features</div>
+        <div class="grid3">
+          <div class="card">
+            <div class="kicker"><span class="dot"></span><span id="f1t">Preview-first workflow</span></div>
+            <p class="muted" id="f1p">Scan and review a complete plan before applying changes.</p>
+          </div>
+          <div class="card">
+            <div class="kicker"><span class="dot"></span><span id="f2t">Matrix rules</span></div>
+            <p class="muted" id="f2p">Control actions for combinations of Date/Location availability.</p>
+          </div>
+          <div class="card">
+            <div class="kicker"><span class="dot"></span><span id="f3t">Conflict handling</span></div>
+            <p class="muted" id="f3p">Skip, add _1, or overwrite when a target name already exists.</p>
+          </div>
+          <div class="card">
+            <div class="kicker"><span class="dot"></span><span id="f4t">Photos + Videos</span></div>
+            <p class="muted" id="f4p">Supports JPG/PNG/HEIC and common video formats. Uses ffprobe when available.</p>
+          </div>
+          <div class="card">
+            <div class="kicker"><span class="dot"></span><span id="f5t">Safe filenames</span></div>
+            <p class="muted" id="f5p">Sanitizes characters and lets you set a max filename length.</p>
+          </div>
+          <div class="card">
+            <div class="kicker"><span class="dot"></span><span id="f6t">Undo & logs</span></div>
+            <p class="muted" id="f6p">CSV export + undo the last run for extra safety.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sectionTitle" id="faqTitle">FAQ</div>
+        <div class="twoCol">
+          <div>
+            <details>
+              <summary><span id="q1">Why does my antivirus warn about the download?</span>
+                <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+              </summary>
+              <p class="muted" id="a1" style="margin-top:10px">
+                This is common for new or unsigned Windows installers. Some antivirus tools use reputation-based detection:
+                if a file is new and not widely downloaded yet, it can trigger warnings. Download only from the official GitHub
+                release and verify checksums if provided. Code signing reduces these warnings.
+              </p>
+            </details>
+
+            <details>
+              <summary><span id="q2">Does the app upload my files?</span>
+                <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+              </summary>
+              <p class="muted" id="a2" style="margin-top:10px">
+                No. Scanning and renaming happen locally. Reverse geocoding uses an online service to convert GPS coordinates to an address.
+              </p>
+            </details>
+          </div>
+
+          <div>
+            <details>
+              <summary><span id="q3">Why do some videos have no creation date?</span>
+                <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+              </summary>
+              <p class="muted" id="a3" style="margin-top:10px">
+                Many videos (downloads, screen recordings, WhatsApp forwards) do not store creation_time metadata. Then the app falls back
+                to the file’s modified date.
+              </p>
+            </details>
+
+            <details>
+              <summary><span id="q4">Where are the logs saved?</span>
+                <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+              </summary>
+              <p class="muted" id="a4" style="margin-top:10px">
+                Logs are saved in <span class="mono">.img_renamer_logs</span> inside your selected folder. You can also export CSV.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span id="copyright"></span>
+        <span>
+          <a class="link" id="linkRelease" href="#" target="_blank" rel="noreferrer">Release notes</a>
+          &nbsp;•&nbsp;
+          <a class="link" href="#faqTitle">FAQ</a>
+        </span>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    const CONFIG = {
+      githubRepoUrl: "https://github.com/FallowDeerYT/img-renamer",
+      releaseUrl: "https://github.com/FallowDeerYT/img-renamer/latest",
+      installerAssetUrl: "https://github.com/FallowDeerYT/img-renamer/releases/latest/download/IMG_Renamer_2.3.2_Installer.exe",
+      portableAssetUrl: "https://github.com/FallowDeerYT/img-renamer/releases/latest/download/IMG_Renamer_2.3.2_Windows_x64_Portable.zip"
+    };
+
+    const STR = {
+      en: {
+        navTag: "Windows",
+        title: "IMG Renamer",
+        sub: "Rename media based on date & location — preview first, configurable rules, conflict handling, undo and logs.",
+        d1: "Download Installer",
+        d2: "Portable (ZIP)",
+        gh: "GitHub",
+        b1: "No Python required",
+        b2: "Preview before rename",
+        b3: "Undo + CSV logs",
+        feat: "Features",
+        f1t: "Preview-first workflow", f1p: "Scan and review a complete plan before applying changes.",
+        f2t: "Matrix rules", f2p: "Control actions for combinations of Date/Location availability.",
+        f3t: "Conflict handling", f3p: "Skip, add _1, or overwrite when a target name already exists.",
+        f4t: "Photos + Videos", f4p: "Supports JPG/PNG/HEIC and common video formats. Uses ffprobe when available.",
+        f5t: "Safe filenames", f5p: "Sanitizes characters and lets you set a max filename length.",
+        f6t: "Undo & logs", f6p: "CSV export + undo the last run for extra safety.",
+        faq: "FAQ",
+        q1: "Why does my antivirus warn about the download?",
+        a1: "This is common for new or unsigned Windows installers. Some antivirus tools use reputation-based detection: if a file is new and not widely downloaded yet, it can trigger warnings. Download only from the official GitHub release and verify checksums if provided. Code signing reduces these warnings.",
+        q2: "Does the app upload my files?",
+        a2: "No. Scanning and renaming happen locally. Reverse geocoding uses an online service to convert GPS coordinates to an address.",
+        q3: "Why do some videos have no creation date?",
+        a3: "Many videos (downloads, screen recordings, WhatsApp forwards) do not store creation_time metadata. Then the app falls back to the file’s modified date.",
+        q4: "Where are the logs saved?",
+        a4: "Logs are saved in .img_renamer_logs inside your selected folder. You can also export CSV.",
+        release: "Release notes"
+      },
+      nl: {
+        navTag: "Windows",
+        title: "IMG Renamer",
+        sub: "Hernoem media op basis van datum & locatie — eerst preview, instelbare regels, conflict handling, undo en logs.",
+        d1: "Download Installer",
+        d2: "Portable (ZIP)",
+        gh: "GitHub",
+        b1: "Geen Python nodig",
+        b2: "Eerst preview, dan hernoemen",
+        b3: "Undo + CSV logs",
+        feat: "Features",
+        f1t: "Preview-first workflow", f1p: "Scan en controleer eerst het volledige plan voordat je wijzigingen toepast.",
+        f2t: "Matrix regels", f2p: "Stuur acties aan voor combinaties van Datum/Locatie beschikbaarheid.",
+        f3t: "Conflict handling", f3p: "Skip, voeg _1 toe, of overschrijf als een naam al bestaat.",
+        f4t: "Foto’s + Video’s", f4p: "Ondersteunt JPG/PNG/HEIC en veel videoformaten. Gebruikt ffprobe als dat kan.",
+        f5t: "Veilige bestandsnamen", f5p: "Schoont tekens op en laat je een maximale lengte instellen.",
+        f6t: "Undo & logs", f6p: "CSV export + undo van de laatste run voor extra veiligheid.",
+        faq: "FAQ",
+        q1: "Waarom geeft mijn antivirus een waarschuwing?",
+        a1: "Dit gebeurt vaak bij nieuwe of niet-gesigneerde Windows installers. Sommige antivirus tools gebruiken reputatie-detectie: als een bestand nieuw is en nog weinig gedownload, kan dat warnings geven. Download alleen via de officiële GitHub release en controleer checksums als die beschikbaar zijn. Code signing vermindert dit soort meldingen.",
+        q2: "Uploadt de app mijn bestanden?",
+        a2: "Nee. Scannen en hernoemen gebeurt lokaal. Reverse geocoding gebruikt een online service om GPS → adres te doen.",
+        q3: "Waarom hebben sommige video’s geen creation date?",
+        a3: "Veel video’s (downloads, schermopnames, WhatsApp) bevatten geen creation_time metadata. Dan valt de app terug op de modified date.",
+        q4: "Waar worden logs opgeslagen?",
+        a4: "Logs staan in .img_renamer_logs in je gekozen map. Je kunt ook CSV exporteren.",
+        release: "Release notes"
+      }
+    };
+
+    function detectLang(){
+      const l = (navigator.language || "en").toLowerCase();
+      return l.startsWith("nl") ? "nl" : "en";
+    }
+
+    function setLinks(){
+      const setHref = (id, href) => { const el = document.getElementById(id); if(el) el.href = href; };
+      setHref("btnGitHub", CONFIG.githubRepoUrl);
+      setHref("linkRelease", CONFIG.releaseUrl);
+      setHref("btnDownload", CONFIG.installerAssetUrl);
+      setHref("btnPortable", CONFIG.portableAssetUrl);
+    }
+
+    function setText(lang){
+      const S = STR[lang] || STR.en;
+      document.documentElement.lang = lang;
+
+      const set = (id, txt) => { const el = document.getElementById(id); if(el) el.textContent = txt; };
+
+      set("navTag", S.navTag);
+      set("hTitle", S.title);
+      set("hSub", S.sub);
+      set("btnDownloadTxt", S.d1);
+      set("btnPortableTxt", S.d2);
+      set("btnGitHubTxt", S.gh);
+
+      set("b1", S.b1); set("b2", S.b2); set("b3", S.b3);
+      set("featTitle", S.feat);
+      set("f1t", S.f1t); set("f1p", S.f1p);
+      set("f2t", S.f2t); set("f2p", S.f2p);
+      set("f3t", S.f3t); set("f3p", S.f3p);
+      set("f4t", S.f4t); set("f4p", S.f4p);
+      set("f5t", S.f5t); set("f5p", S.f5p);
+      set("f6t", S.f6t); set("f6p", S.f6p);
+
+      set("faqTitle", S.faq);
+      set("q1", S.q1); set("a1", S.a1);
+      set("q2", S.q2); set("a2", S.a2);
+      set("q3", S.q3); set("a3", S.a3);
+      set("q4", S.q4); set("a4", S.a4);
+
+      const year = new Date().getFullYear();
+      set("copyright", `© Fallow Deer ${year}`);
+      const lr = document.getElementById("linkRelease");
+      if(lr) lr.textContent = S.release;
+    }
+
+    function setTheme(theme){
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("theme", theme);
+      const icon = document.getElementById("themeIcon");
+      if(!icon) return;
+      if(theme === "light"){
+        icon.innerHTML = '<path fill="currentColor" d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm0-16a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1Zm0 18a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1Zm10-9a1 1 0 0 1-1 1h-2a1 1 0 1 1 0-2h2a1 1 0 0 1 1 1ZM5 12a1 1 0 0 1-1 1H2a1 1 0 1 1 0-2h2a1 1 0 0 1 1 1Zm14.07-6.07a1 1 0 0 1 0 1.41l-1.41 1.41a1 1 0 1 1-1.41-1.41l1.41-1.41a1 1 0 0 1 1.41 0ZM7.75 17.66a1 1 0 0 1 0 1.41L6.34 20.48a1 1 0 1 1-1.41-1.41l1.41-1.41a1 1 0 0 1 1.41 0Zm11.32 2.82a1 1 0 0 1-1.41 0l-1.41-1.41a1 1 0 0 1 1.41-1.41l1.41 1.41a1 1 0 0 1 0 1.41ZM7.75 6.34a1 1 0 0 1-1.41 0L4.93 4.93a1 1 0 0 1 1.41-1.41l1.41 1.41a1 1 0 0 1 0 1.41Z"/>';
+      } else {
+        icon.innerHTML = '<path fill="currentColor" d="M21.64 13a1 1 0 0 0-1.05-.14 8.05 8 0 0 1-3.37.73A8.15 8.15 0 0 1 9.08 5.49a8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36 10 10 0 1 0 22 14a1 1 0 0 0-.36-1Z"/>';
+      }
+    }
+
+    // Init
+    setLinks();
+
+    // OS tag
+    const isWin = navigator.userAgent.toLowerCase().includes("windows");
+    document.getElementById("navTag").textContent = isWin ? "Windows" : "Desktop";
+
+    const savedLang = localStorage.getItem("lang");
+    const lang = savedLang || detectLang();
+    const sel = document.getElementById("langSel");
+    if(sel) sel.value = lang;
+    setText(lang);
+
+    sel?.addEventListener("change", (e)=>{
+      const v = e.target.value;
+      localStorage.setItem("lang", v);
+      setText(v);
+    });
+
+    const savedTheme = localStorage.getItem("theme");
+    const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+    setTheme(savedTheme || (prefersLight ? "light" : "dark"));
+
+    document.getElementById("themeBtn")?.addEventListener("click", ()=>{
+      const cur = document.documentElement.getAttribute("data-theme") || "dark";
+      setTheme(cur === "dark" ? "light" : "dark");
+    });
+  </script>
+</body>
+</html>
