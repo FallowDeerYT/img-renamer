@@ -26,7 +26,7 @@ You can also use the project website (GitHub Pages) for direct download links.
 - Undo last run + CSV log export
 - Light/Dark theme + EN/NL language
 
-## How it works (high level)
+## How it works
 
 1. Select a folder and file types
 2. Scan to build a rename plan
